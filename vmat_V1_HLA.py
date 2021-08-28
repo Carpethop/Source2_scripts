@@ -1,0 +1,42 @@
+import shutil
+from pathlib import Path
+
+input_dir = Path(input("Folder with textures: "))
+output_dir = Path(input("Output folder: "))
+material_path = Path(input("Material path prefix: "))
+
+for file in filter(lambda p: p.suffix in {".tga", ".png",'.jpg'}, input_dir.rglob("*")):  # Scan all files in the directory with .tga  extension
+    if not (output_dir / file.name).exists():
+        shutil.copy2(file, output_dir)
+    with (output_dir / file.name).with_suffix('.vmat').open('w') as f:
+        f.write('// THIS FILE IS AUTO-GENERATED WITH CARPETHOP VMAT CREATOR\n')
+        f.write('\n Layer0\n')
+        f.write('{')
+        f.write('\n	shader "vr_complex.vfx"\n')
+        f.write('\n	F_RENDER_BACKFACES 1"\n')
+        f.write('\n')
+        f.write('	//---- Color ----\n')
+        f.write('	g_flModelTintAmount "1.000"\n')
+        f.write('	g_vColorTint "[1.000000 1.000000 1.000000 0.000000]"\n')
+        f.write(f'	TextureColor "{material_path.as_posix()}/{file.name}')
+        f.write('"\n	//---- Fade ----\n')
+        f.write('	g_flFadeExponent "1.000"\n')
+        f.write('\n	//---- Fog ---- \n')
+        f.write('	g_bFogEnabled "1"\n')
+        f.write('\n	//---- Lighting ----\n')
+        f.write('	g_flDirectionalLightmapMinZ "0.050"\n')
+        f.write('	g_flDirectionalLightmapStrength "1.000"\n')
+        f.write('\n	//---- Metalness ----\n')
+        f.write('	g_flMetalness "0.000"\n')
+        f.write('\n	//---- Normal ----\n')
+        f.write('	TextureNormal "[0.501961 0.501961 1.000000 0.000000]"\n')
+        f.write('\n	//---- Roughness ----\n')
+        f.write('	TextureRoughness "[1.000000 1.000000 1.000000 0.000000]"\n')
+        f.write('\n	//---- Texture Coordinates ----\n')
+        f.write('	g_nScaleTexCoordUByModelScaleAxis "0"\n')
+        f.write('	g_nScaleTexCoordVByModelScaleAxis "0"\n')
+        f.write('	g_vTexCoordOffset "[0.000 0.000]"\n')
+        f.write('	g_vTexCoordScale "[1.000 1.000]"\n')
+        f.write('	g_vTexCoordScrollSpeed "[0.000 0.000]"\n')
+        f.write('}')
+        f.close()
